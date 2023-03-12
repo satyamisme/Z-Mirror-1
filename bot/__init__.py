@@ -36,8 +36,7 @@ LOGGER = getLogger(__name__)
 load_dotenv('config.env', override=True)
 
 PORT = environ.get('PORT')
-if BASE_URL:
-    Popen(f"gunicorn web.wserver:app --bind 0.0.0.0:{PORT}", shell=True)
+Popen(f"gunicorn web.wserver:app --bind 0.0.0.0:{PORT}", shell=True)
 
 Interval = []
 QbInterval = []
