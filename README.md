@@ -1,3 +1,6 @@
+# Don't use this repo, its full of dump
+# This is my personal Upstream Repo
+
 This is a Telegram Bot written in Python for mirroring files on the Internet to your Google Drive or Telegram.
 
 # Available features in this REPO:
