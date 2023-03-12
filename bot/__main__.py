@@ -89,9 +89,6 @@ async def start(client, message):
     else:
         start_string = 'Hey, Welcome dear. \n' \
                        'I can Mirror all your links To Google Drive! \n' \
-                       'Unfortunately you are not authorized!\n' \
-                       'Please deploy your own BOT!' \
-                       'Created With Love by @Z_Mirror . \n' \
                        'Thank You!'
     await sendMessage(message, start_string)
 
