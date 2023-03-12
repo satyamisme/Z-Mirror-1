@@ -3,6 +3,7 @@ from os import path as ospath, environ
 from subprocess import run as srun
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from requests import get as rget
 
 if ospath.exists('log.txt'):
     with open('log.txt', 'r+') as f:
@@ -11,6 +12,22 @@ if ospath.exists('log.txt'):
 basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     handlers=[FileHandler('log.txt'), StreamHandler()],
                     level=INFO)
+
+CONFIG_FILE_URL = environ.get('CONFIG_FILE_URL')
+try:
+    if len(CONFIG_FILE_URL) == 0:
+        raise TypeError
+    try:
+        res = rget(CONFIG_FILE_URL)
+        if res.status_code == 200:
+            with open('config.env', 'wb+') as f:
+                f.write(res.content)
+        else:
+            log_error(f"Failed to download config.env {res.status_code}")
+    except Exception as e:
+        log_error(f"CONFIG_FILE_URL: {e}")
+except:
+    pass
 
 load_dotenv('config.env', override=True)
 
@@ -40,33 +57,35 @@ if DATABASE_URL:
         environ['UPSTREAM_BRANCH'] = config_dict['UPSTREAM_BRANCH']
     conn.close()
 
-UPSTREAM_REPO = environ.get('UPSTREAM_REPO', '')
-if len(UPSTREAM_REPO) == 0:
-   UPSTREAM_REPO = None
+UPSTREAM_REPO = environ.get('UPSTREAM_REPO')
+UPSTREAM_BRANCH = environ.get('UPSTREAM_BRANCH')
+try:
+    if len(UPSTREAM_REPO) == 0:
+       raise TypeError
+except:
+    UPSTREAM_REPO = "https://github.com/AnshumanPM/Z-Mirror"
+try:
+    if len(UPSTREAM_BRANCH) == 0:
+       raise TypeError
+except:
+    UPSTREAM_BRANCH = 'h-code'
 
-UPSTREAM_BRANCH = environ.get('UPSTREAM_BRANCH', '')
-if len(UPSTREAM_BRANCH) == 0:
-    UPSTREAM_BRANCH = ''
+if ospath.exists('.git'):
+    srun(["rm", "-rf", ".git"])
 
-if UPSTREAM_REPO:
-    if ospath.exists('.git'):
-        srun(["rm", "-rf", ".git"])
+if ospath.exists('.git'):
+    srun(["rm", "-rf", ".git"])
 
-    update = srun([f"git init -q \
-                     && git config --global user.email shuvam.dawn12345@gmail.com \
-                     && git config --global user.name Dawn-India \
-                     && git add . \
-                     && git commit -sm update -q \
-                     && git remote add origin {UPSTREAM_REPO} \
-                     && git fetch origin -q \
-                     && git reset --hard origin/{UPSTREAM_BRANCH} -q"], shell=True)
+update = srun([f"git init -q \
+                 && git config --global user.email anshumanprasadmahanta@gmail.com \
+                 && git config --global user.name AnshumanPM \
+                 && git add . \
+                 && git commit -sm update -q \
+                 && git remote add origin {UPSTREAM_REPO} \
+                 && git fetch origin -q \
+                 && git reset --hard origin/{UPSTREAM_BRANCH} -q"], shell=True)
 
-    if update.returncode == 0:
-        log_info('Successfully updated with latest commit.')
-        log_info(f'Repo in use: {UPSTREAM_REPO}')
-        log_info(f'Branch in use: {UPSTREAM_BRANCH}')
-        log_info('Thanks For Using Z_Mirror')
-    else:
-        log_error('Something went wrong while updating.')
-        log_info('Check if entered UPSTREAM_REPO is valid or not!')
-        log_info(f'Entered upstream repo: {UPSTREAM_REPO}')
+if update.returncode == 0:
+    log_info('Successfully updated with latest commit from UPSTREAM_REPO')
+else:
+    log_error('Something went wrong while updating, check UPSTREAM_REPO if valid or not!')
