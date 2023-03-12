@@ -178,7 +178,7 @@ Please wait!\n<b>{download.status()}</b> Your Task [<a href='{download.message.l
                         msg += f"\n<b>Playlist</b>: {playlist}"
                 except:
                     pass
-            msg += f"\n⚠️ <code>/{BotCommands.CancelMirror} {download.gid()}</code>\n\n"
+            msg += f"\n<b>Cancel:</b>: <code>/{BotCommands.CancelMirror} {download.gid()}</code>\n\n"
             if STATUS_LIMIT and index == STATUS_LIMIT:
                 break
         if len(msg) == 0:
