@@ -35,6 +35,10 @@ LOGGER = getLogger(__name__)
 
 load_dotenv('config.env', override=True)
 
+PORT = environ.get('PORT')
+if BASE_URL:
+    Popen(f"gunicorn web.wserver:app --bind 0.0.0.0:{PORT}", shell=True)
+
 Interval = []
 QbInterval = []
 list_drives = {}
@@ -472,9 +476,6 @@ if path.exists('categories.txt'):
             else:
                 tempdict['index_link'] = ''
             categories[name] = tempdict
-
-if BASE_URL:
-    Popen(f"gunicorn web.wserver:app --bind 0.0.0.0:{SERVER_PORT}", shell=True)
 
 run(["qbittorrent-nox", "-d", "--profile=."])
 if not path.exists('.netrc'):
